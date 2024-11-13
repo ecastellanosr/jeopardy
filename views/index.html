@@ -1,0 +1,81 @@
+{{ block "index" . }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeopardy Main Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+</head>
+<body class="bg-cyan-700">
+    <div class="container mx-auto">
+        <div class="text-xl text-center">JEOPARDY</div>
+
+        <div class="container bg-black grid grid-cols-6 p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white">
+            <div class="bg-blue-950">Bodies of water</div>
+            <div class="bg-blue-950">title2</div>
+            <div class="bg-blue-950">title3</div>
+            <div class="bg-blue-950">title4</div>
+            <div class="bg-blue-950">title5</div>
+            <div class="bg-blue-950">title6</div>
+            <div class="bg-blue-950">100</div>
+            <div class="bg-blue-950">100</div>
+            <div class="bg-blue-950">100</div>
+            <div class="bg-blue-950">100</div>
+            <div class="bg-blue-950">100</div>
+            <div class="bg-blue-950">100</div>
+            <div class="bg-blue-950">200</div>
+            <div class="bg-blue-950">200</div>
+            <div class="bg-blue-950">200</div>
+            <div class="bg-blue-950">200</div>
+            <div class="bg-blue-950">200</div>
+            <div class="bg-blue-950">200</div>
+            <div class="bg-blue-950">300</div>
+            <div class="bg-blue-950">300</div>
+            <div class="bg-blue-950">300</div>
+            <div class="bg-blue-950">300</div>
+            <div class="bg-blue-950">300</div>
+            <div class="bg-blue-950">300</div>
+            <div class="bg-blue-950">400</div>
+            <div class="bg-blue-950">400</div>
+            <div class="bg-blue-950">400</div>
+            <div class="bg-blue-950">400</div>
+            <div class="bg-blue-950">400</div>
+            <div class="bg-blue-950">400</div>
+            <div class="bg-blue-950">500</div>
+            <div class="bg-blue-950">500</div>
+            <div class="bg-blue-950">500</div>
+            <div class="bg-blue-950">500</div>
+            <div class="bg-blue-950">500</div>
+            <div class="bg-blue-950">500</div>
+        </div>
+
+        <div class="grid grid-cols-4 mx-auto p-2 gap-4 text-center">
+            <div>
+                {{template "team-form" .}}
+            </div>
+            
+            <div id="team1" class="divide-y-2 divide-black">
+                <div>team 1 name</div>
+                <div id="points">points</div>
+            </div>
+            <div id="team1" class="divide-y-2 divide-black">
+                <div>team 2 name</div>
+                <div id="points">points</div>
+            </div>
+            <div id="team1" class="divide-y-2 divide-black">
+                <div>team 3 name</div>
+                <div id="points">points</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{{ end }}
+
+{{ block "team-form" . }}
+    <form id="teams">
+        Team-Name: <input type="text" name="name">
+    </form>
+{{end}}

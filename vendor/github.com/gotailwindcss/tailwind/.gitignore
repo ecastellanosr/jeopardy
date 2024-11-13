@@ -1,0 +1,6 @@
+*.out
+*.test
+upstream/out
+.vscode
+cmd/gotailwindcss/gotailwindcss
+upstream/node_modules
