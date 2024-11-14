@@ -6,76 +6,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeopardy Main Page</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
 </head>
 <body class="bg-cyan-700">
     <div class="container mx-auto">
         <div class="text-xl text-center">JEOPARDY</div>
 
         <div class="container bg-black grid grid-cols-6 p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white">
-            <div class="bg-blue-950">Bodies of water</div>
-            <div class="bg-blue-950">title2</div>
-            <div class="bg-blue-950">title3</div>
-            <div class="bg-blue-950">title4</div>
-            <div class="bg-blue-950">title5</div>
-            <div class="bg-blue-950">title6</div>
-            <div class="bg-blue-950">100</div>
-            <div class="bg-blue-950">100</div>
-            <div class="bg-blue-950">100</div>
-            <div class="bg-blue-950">100</div>
-            <div class="bg-blue-950">100</div>
-            <div class="bg-blue-950">100</div>
-            <div class="bg-blue-950">200</div>
-            <div class="bg-blue-950">200</div>
-            <div class="bg-blue-950">200</div>
-            <div class="bg-blue-950">200</div>
-            <div class="bg-blue-950">200</div>
-            <div class="bg-blue-950">200</div>
-            <div class="bg-blue-950">300</div>
-            <div class="bg-blue-950">300</div>
-            <div class="bg-blue-950">300</div>
-            <div class="bg-blue-950">300</div>
-            <div class="bg-blue-950">300</div>
-            <div class="bg-blue-950">300</div>
-            <div class="bg-blue-950">400</div>
-            <div class="bg-blue-950">400</div>
-            <div class="bg-blue-950">400</div>
-            <div class="bg-blue-950">400</div>
-            <div class="bg-blue-950">400</div>
-            <div class="bg-blue-950">400</div>
-            <div class="bg-blue-950">500</div>
-            <div class="bg-blue-950">500</div>
-            <div class="bg-blue-950">500</div>
-            <div class="bg-blue-950">500</div>
-            <div class="bg-blue-950">500</div>
-            <div class="bg-blue-950">500</div>
+            <div class="bg-blue-950 py-2">Bodies of water</div>
+            <div class="bg-blue-950 py-2">title2</div>
+            <div class="bg-blue-950 py-2">title3</div>
+            <div class="bg-blue-950 py-2">title4</div>
+            <div class="bg-blue-950 py-2">title5</div>
+            <div class="bg-blue-950 py-2">title6</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
         </div>
 
-        <div class="grid grid-cols-4 mx-auto p-2 gap-4 text-center">
+        <div class="grid grid-cols-4 grid-flow-col p-2 gap-4 text-center max-w-7xl mx-auto">
             <div>
                 {{template "team-form" .}}
             </div>
-            
-            <div id="team1" class="divide-y-2 divide-black">
-                <div>team 1 name</div>
-                <div id="points">points</div>
+
+            <div>
+                {{template "add-team" .}}
             </div>
+
             <div id="team1" class="divide-y-2 divide-black">
                 <div>team 2 name</div>
                 <div id="points">points</div>
             </div>
+
             <div id="team1" class="divide-y-2 divide-black">
-                <div>team 3 name</div>
+                <div>team 2 name</div>
                 <div id="points">points</div>
             </div>
+
         </div>
     </div>
 </body>
 </html>
 {{ end }}
 
+{{ block "add-team" . }}
+    <div id="add-team" class="bg-blue-950 text-white animate-pulse hover:animate-none pb-2">
+        <div>Add Team?</div>
+        <div>
+            <button hx-swap="outerHTML" hx-target="#add-team" hx-post="/add-team" hx-vals='{"add":"yes"}' class="border-2 border-green-900 bg-green-600 px-4 hover:cursor-pointer">  Yes  </button>
+            <button hx-swap="outerHTML"hx-target="#add-team" hx-post="/add-team" class="border-2 border-red-900 bg-red-600 px-4 hover:cursor-pointer">  No!  </button>
+        </div>
+    </div>
+{{end}}
+
 {{ block "team-form" . }}
-    <form id="teams">
-        Team-Name: <input type="text" name="name">
-    </form>
+    <div id="team-form" class="flex flex-col px-8">
+        <form id="teams" hx-post="/teams" hx-swap="outerHTML"hx-target="#team-form">
+            Team Name: <input type="text" name="name" class="text-black">
+            <button type="submit">Submit team</button>
+        </form>
+    </div>
+{{end}}
+
+{{ block "team" . }}
+    <div id="team1" class="divide-y-2 divide-black opacity-100">
+        <div>{{.Name}}</div>
+        <div id="points">{{.Points}} Points</div>
+{{end}}
+
+{{ block "nothing" .}}
 {{end}}

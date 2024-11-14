@@ -14,6 +14,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+type AddTeam struct {
+	Add string `json:"add"`
+}
+
 type Template struct {
 	tmpl *template.Template
 }
@@ -101,7 +105,7 @@ func main() {
 		if err != nil {
 			fmt.Println("not a number")
 		}
-		points := c.Param("points")
+		points := c.Param("points") //hx-vals
 		pointstoappend, err := strconv.Atoi(points)
 		if err != nil {
 			fmt.Println("not a number")
@@ -134,6 +138,18 @@ func main() {
 			}
 		}
 		return c.Render(200, "points", winnerteam.Points)
+	})
+
+	e.POST("/add-team", func(c echo.Context) error {
+
+		add := c.FormValue("add")
+		if add != "yes" && team_id != 0 {
+			return c.Render(200, "nothing", nil)
+		}
+		if add == "yes" {
+			return c.Render(200, "team-form", nil)
+		}
+		return c.Render(200, "add-team", nil)
 	})
 
 	tailwindHandler := twhandler.New(http.Dir("css"), "/css", twembed.New())
