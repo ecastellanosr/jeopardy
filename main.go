@@ -92,10 +92,15 @@ func main() {
 
 	e.POST("/teams", func(c echo.Context) error {
 		team_id++
+
 		name := c.FormValue("name")
 		team := createTeam(name, team_id)
 		listofTeams.Teams = append(listofTeams.Teams, team)
-		return c.Render(200, "team", team)
+		c.Render(200, "team", team)
+		if team_id >= 4 {
+			return c.Render(200, "nothing", nil)
+		}
+		return c.Render(200, "oob-add-team", nil)
 	})
 
 	e.POST("/host/team/:id", func(c echo.Context) error {
@@ -143,7 +148,7 @@ func main() {
 	e.POST("/add-team", func(c echo.Context) error {
 
 		add := c.FormValue("add")
-		if add != "yes" && team_id != 0 {
+		if add != "yes" && team_id > 1 {
 			return c.Render(200, "nothing", nil)
 		}
 		if add == "yes" {
