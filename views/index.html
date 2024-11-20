@@ -11,45 +11,7 @@
 <body class="bg-cyan-700">
     <div class="container mx-auto">
         <div class="text-xl text-center">JEOPARDY</div>
-
-        <div class="container bg-black grid grid-cols-6 p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white">
-            <div class="bg-blue-950 py-2">Bodies of water</div>
-            <div class="bg-blue-950 py-2">title2</div>
-            <div class="bg-blue-950 py-2">title3</div>
-            <div class="bg-blue-950 py-2">title4</div>
-            <div class="bg-blue-950 py-2">title5</div>
-            <div class="bg-blue-950 py-2">title6</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-        </div>
+        {{template "cards" .}}
 
         <div id="teams" class="flex justify-around p-2 gap-4 text-center max-w-7xl mx-auto align-middle">
             
@@ -102,5 +64,68 @@
         <div id="points">{{.Points}} Points</div>
 {{end}}
 
+{{block "cards" .}}
+        <div class="container bg-black grid grid-cols-6 p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white">
+            <div class="bg-blue-950 py-2">Bodies of water</div>
+            <div class="bg-blue-950 py-2">title2</div>
+            <div class="bg-blue-950 py-2">title3</div>
+            <div class="bg-blue-950 py-2">title4</div>
+            <div class="bg-blue-950 py-2">title5</div>
+            <div class="bg-blue-950 py-2">title6</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">100</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">200</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">300</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">400</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
+            <div class="bg-blue-950 py-2">500</div>
+        </div>
+{{end}}
+
+{{block "test-cards" .}}
+        <div id="cards" class="container bg-black grid grid-cols-6 p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white">
+             
+        </div>
+{{end}}
+
+{{block "test-card" .}}
+<div id="cards" hx-swap-oob="beforeend">
+    <div class="bg-blue-950 py-2">
+        {{.Number}}
+    </div>
+</div>
+{{end}}
+
+{{block "card" .}}
+
+<div class="bg-blue-950 py-2">{{.Number}}</div>
+    
+</div>
+{{end}}
+    
 {{ block "nothing" .}}
 {{end}}
+

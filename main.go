@@ -72,6 +72,60 @@ func NewTeams() *teams {
 	}
 }
 
+type cards struct {
+	cards []Card
+}
+
+type Card struct {
+	Number   string
+	question string
+	hasimg   bool
+	imgpath  string
+}
+
+func NewTable() *cards {
+	return &cards{
+		cards: []Card{
+			{
+				Number:   "title",
+				question: "idk",
+				hasimg:   false,
+				imgpath:  "a",
+			},
+			{
+				Number:   "100",
+				question: "idk",
+				hasimg:   false,
+				imgpath:  "a",
+			},
+			{
+				Number:   "200",
+				question: "idk",
+				hasimg:   false,
+				imgpath:  "a",
+			},
+			{
+				Number:   "300",
+				question: "idk",
+				hasimg:   false,
+				imgpath:  "a",
+			},
+			{
+				Number:   "400",
+				question: "idk",
+				hasimg:   false,
+				imgpath:  "a",
+			},
+			{
+				Number:   "500",
+				question: "idk",
+				hasimg:   false,
+				imgpath:  "a",
+			},
+		},
+	}
+}
+
 func main() {
 
 	e := echo.New()
@@ -85,10 +139,25 @@ func main() {
 
 	listofTeams := NewTeams()
 	team_id := 0 //start the id teams
-
+	table := NewTable()
 	e.GET("/", func(c echo.Context) error {
 		return c.Render(200, "index", nil)
 	})
+
+	e.GET("/host", func(c echo.Context) error {
+		return c.Render(200, "host", nil)
+	})
+
+	e.POST("/host/questions", func(c echo.Context) error {
+		for _, card := range table.cards {
+			c.Render(200, "test-card", card)
+		}
+		return nil
+	})
+
+	// e.GET("/host", func(c echo.Context) error {
+	// 	return c.Render(200, "host", nil)
+	// })
 
 	e.POST("/teams", func(c echo.Context) error {
 		team_id++
@@ -161,7 +230,7 @@ func main() {
 	e.GET("/css/*", echo.WrapHandler(tailwindHandler))
 	e.GET("ws", handleWebSocket)
 
-	port := ":8080"
+	port := ":8000"
 	fmt.Println("WebSocket server is running on Port", port)
 	e.Logger.Fatal(e.Start(port))
 }
