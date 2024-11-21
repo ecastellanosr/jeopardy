@@ -72,58 +72,20 @@ func NewTeams() *teams {
 	}
 }
 
-type cards struct {
-	cards []Card
-}
-
 type Card struct {
-	Number   string
-	question string
-	hasimg   bool
-	imgpath  string
+	Number   string `json:"number"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+	HasQImg  bool   `json:"hasqimg"`
+	QImgName string `json:"QImgName"`
+	HasAImg  bool   `json:"hasaimg"`
+	AImgName string `json:"AImgName"`
 }
 
-func NewTable() *cards {
-	return &cards{
-		cards: []Card{
-			{
-				Number:   "title",
-				question: "idk",
-				hasimg:   false,
-				imgpath:  "a",
-			},
-			{
-				Number:   "100",
-				question: "idk",
-				hasimg:   false,
-				imgpath:  "a",
-			},
-			{
-				Number:   "200",
-				question: "idk",
-				hasimg:   false,
-				imgpath:  "a",
-			},
-			{
-				Number:   "300",
-				question: "idk",
-				hasimg:   false,
-				imgpath:  "a",
-			},
-			{
-				Number:   "400",
-				question: "idk",
-				hasimg:   false,
-				imgpath:  "a",
-			},
-			{
-				Number:   "500",
-				question: "idk",
-				hasimg:   false,
-				imgpath:  "a",
-			},
-		},
-	}
+type Category struct {
+	Title  string `json:"title"`
+	Number string `json:"number"`
+	Cards  []Card `json:"cards"`
 }
 
 func main() {
@@ -139,7 +101,12 @@ func main() {
 
 	listofTeams := NewTeams()
 	team_id := 0 //start the id teams
-	table := NewTable()
+
+	categories, err := readcategories()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	e.GET("/", func(c echo.Context) error {
 		return c.Render(200, "index", nil)
 	})
@@ -149,8 +116,13 @@ func main() {
 	})
 
 	e.POST("/host/questions", func(c echo.Context) error {
-		for _, card := range table.cards {
-			c.Render(200, "test-card", card)
+		for _, category := range categories {
+			fmt.Println(category.Title)
+			c.Render(200, "test-card", category)
+			for _, card := range category.Cards {
+				fmt.Println(card.Number)
+				c.Render(200, "test-card", card)
+			}
 		}
 		return nil
 	})
@@ -224,6 +196,14 @@ func main() {
 			return c.Render(200, "team-form", nil)
 		}
 		return c.Render(200, "add-team", nil)
+	})
+
+	e.GET("/testing", func(c echo.Context) error {
+		categories, err := readcategories()
+		if err != nil {
+			return err
+		}
+		return c.JSON(200, categories)
 	})
 
 	tailwindHandler := twhandler.New(http.Dir("css"), "/css", twembed.New())
