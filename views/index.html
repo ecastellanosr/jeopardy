@@ -11,7 +11,7 @@
 <body class="bg-cyan-700">
     <div class="container mx-auto">
         <div class="text-xl text-center">JEOPARDY</div>
-        {{template "cards" .}}
+        {{template "table" .}}
 
         <div id="teams" class="flex justify-around p-2 gap-4 text-center max-w-7xl mx-auto align-middle">
             
@@ -64,75 +64,29 @@
         <div id="points">{{.Points}} Points</div>
 {{end}}
 
-{{block "cards" .}}
-        <div class="bg-black grid grid-flow-col grid-rows-[auto,repeat(5,1fr)] auto-cols-fr p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white empty:hidden">
-            <div class="bg-blue-950 py-2">Bodies of water</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">100</div>
-            <div class="bg-blue-950 py-2">title2</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">200</div>
-            <div class="bg-blue-950 py-2">Bodies of water</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">300</div>
-            <div class="bg-blue-950 py-2">Bodies of water</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">400</div>
-            <div class="bg-blue-950 py-2">Bodies of water</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">Bodies of water</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
-            <div class="bg-blue-950 py-2">500</div>
+{{block "table" .}}
+        <div id="cards" class="bg-black grid grid-flow-col grid-rows-[auto,repeat(5,1fr)] auto-cols-fr p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white empty:hidden">
+            {{template "test-column" .}}
         </div>
 {{end}}
 
-{{block "test-cards" .}}
-        <div id="cards" class="bg-black grid grid-flow-col grid-rows-[auto,repeat(5,1fr)] auto-cols-fr p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white empty:hidden"></div>
-{{end}}
+{{block "test-column" .}}
+{{$categories := .}}
+    {{ range $category := $categories}}
+        <div class="bg-blue-950 py-4 flex justify-center items-center">
+            <span>{{$category.Title}}</span>
+        </div>
 
-{{block "test-card" .}}
-<div id="cards" hx-swap-oob="beforeend">
-    <div class="bg-blue-950 py-4 flex justify-center items-center">
-    {{if (eq .Number "") }}
-    <span class="">{{.Title}}</span>
-    {{else}}
-    {{.Number}}
+        {{range $card := $category.Cards}}
+            <div class="bg-blue-950 py-4 flex justify-center items-center">
+                <span>{{$card.Number}}</span>
+            </div>
+        {{end}}
     {{end}}
-    </div>
-</div>
 {{end}}
 
-{{block "card" .}}
 
-<div class="bg-blue-950 py-4 flex justify-center items-center">
-    {{if .Number}} 
-        {{.Number}}
-    {{else}} 
-        {{.Title}}
-    {{end}}
-</div>
-    
-</div>
-{{end}}
+
     
 {{ block "nothing" .}}
 {{end}}

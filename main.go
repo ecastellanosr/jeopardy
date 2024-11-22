@@ -108,11 +108,11 @@ func main() {
 	}
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(200, "index", nil)
+		return c.Render(200, "index", categories)
 	})
 
 	e.GET("/host", func(c echo.Context) error {
-		return c.Render(200, "host", nil)
+		return c.Render(200, "host", categories)
 	})
 
 	e.POST("/host/questions", func(c echo.Context) error {
@@ -126,10 +126,6 @@ func main() {
 		}
 		return nil
 	})
-
-	// e.GET("/host", func(c echo.Context) error {
-	// 	return c.Render(200, "host", nil)
-	// })
 
 	e.POST("/teams", func(c echo.Context) error {
 		team_id++

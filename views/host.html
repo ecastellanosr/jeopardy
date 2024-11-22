@@ -11,10 +11,7 @@
     <body class="bg-cyan-700">
         <div class="container mx-auto flex flex-col items-center">
             <div class="text-xl text-center">JEOPARDY</div>
-            {{template "test-cards" .}}
-            <div class="flex justify-center">
-                <button hx-swap="outerHTML" hx-post="/host/questions" class="border-2 border-green-900 bg-green-600 px-4 hover:cursor-pointer">  start?  </button>
-            </div>
+            {{template "table" .}}
         </div>
 </body>
 </html>
