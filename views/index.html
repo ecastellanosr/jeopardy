@@ -10,7 +10,7 @@
 </head>
 <body class="bg-cyan-700">
     <div class="container mx-auto">
-        <div class="text-xl text-center">JEOPARDY</div>
+        <div class="text-4xl text-center">JEOPARDY</div>
         {{template "table" .}}
 
         <div id="teams" class="flex justify-around p-2 gap-4 text-center max-w-7xl mx-auto align-middle">
@@ -22,6 +22,33 @@
 </body>
 </html>
 {{ end }}
+
+{{block "table" .}}
+        <div id="cards" class="bg-black grid grid-flow-col grid-rows-[auto,repeat(5,1fr)] auto-cols-fr p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white empty:hidden">
+            {{template "column" .}}
+        </div>
+{{end}}
+
+{{block "column" .}}
+{{$categories := .}}
+    {{ range $category := $categories}}
+        <div class="bg-blue-950 py-4 flex justify-center items-center">
+            {{$category.Title}}
+        </div>
+
+        {{range $card := $category.Cards}}
+            <div hx-post="/question" hx-swap="outerHTML" hx-trigger="click" hx-vals='{"number": "{{ .Number }}"}' class="bg-blue-950 py-3 flex justify-center items-center cursor-pointer">
+                {{$card.Number}}
+            </div>
+        {{end}}
+    {{end}}
+{{end}}
+
+{{block "clicked-card" .}}
+<div class="bg-blue-800 py-3 flex justify-center items-center">
+    {{ . }}
+</div>
+{{end}}
 
 {{ block "teams" .}}
     {{template "add-team" .}}
@@ -63,29 +90,6 @@
         <div>{{.Name}}</div>
         <div id="points">{{.Points}} Points</div>
 {{end}}
-
-{{block "table" .}}
-        <div id="cards" class="bg-black grid grid-flow-col grid-rows-[auto,repeat(5,1fr)] auto-cols-fr p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white empty:hidden">
-            {{template "test-column" .}}
-        </div>
-{{end}}
-
-{{block "test-column" .}}
-{{$categories := .}}
-    {{ range $category := $categories}}
-        <div class="bg-blue-950 py-4 flex justify-center items-center">
-            <span>{{$category.Title}}</span>
-        </div>
-
-        {{range $card := $category.Cards}}
-            <div class="bg-blue-950 py-4 flex justify-center items-center">
-                <span>{{$card.Number}}</span>
-            </div>
-        {{end}}
-    {{end}}
-{{end}}
-
-
 
     
 {{ block "nothing" .}}

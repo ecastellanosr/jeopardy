@@ -7,6 +7,22 @@ import (
 	"strconv"
 )
 
+type Card struct {
+	Number   string `json:"number"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+	HasQImg  bool   `json:"hasqimg"`
+	QImgName string `json:"QImgName"`
+	HasAImg  bool   `json:"hasaimg"`
+	AImgName string `json:"AImgName"`
+}
+
+type Category struct {
+	Title  string `json:"title"`
+	Number string `json:"number"`
+	Cards  []Card `json:"cards"`
+}
+
 func readcategories() ([]Category, error) {
 	var categories []Category
 	for i := 1; i < 7; i++ {

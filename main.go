@@ -14,10 +14,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-type AddTeam struct {
-	Add string `json:"add"`
-}
-
 type Template struct {
 	tmpl *template.Template
 }
@@ -48,46 +44,6 @@ func handleWebSocket(c echo.Context) error {
 	return nil
 }
 
-type team struct {
-	Name   string
-	id     int
-	Points int
-}
-
-type teams struct {
-	Teams []team
-}
-
-func createTeam(name string, id int) team {
-	return team{
-		Name:   name,
-		id:     id,
-		Points: 0,
-	}
-}
-
-func NewTeams() *teams {
-	return &teams{
-		Teams: []team{},
-	}
-}
-
-type Card struct {
-	Number   string `json:"number"`
-	Question string `json:"question"`
-	Answer   string `json:"answer"`
-	HasQImg  bool   `json:"hasqimg"`
-	QImgName string `json:"QImgName"`
-	HasAImg  bool   `json:"hasaimg"`
-	AImgName string `json:"AImgName"`
-}
-
-type Category struct {
-	Title  string `json:"title"`
-	Number string `json:"number"`
-	Cards  []Card `json:"cards"`
-}
-
 func main() {
 
 	e := echo.New()
@@ -115,16 +71,10 @@ func main() {
 		return c.Render(200, "host", categories)
 	})
 
-	e.POST("/host/questions", func(c echo.Context) error {
-		for _, category := range categories {
-			fmt.Println(category.Title)
-			c.Render(200, "test-card", category)
-			for _, card := range category.Cards {
-				fmt.Println(card.Number)
-				c.Render(200, "test-card", card)
-			}
-		}
-		return nil
+	e.POST("/question", func(c echo.Context) error {
+		number := c.FormValue("number")
+		fmt.Println(number)
+		return c.Render(200, "clicked-card", number)
 	})
 
 	e.POST("/teams", func(c echo.Context) error {
@@ -133,6 +83,7 @@ func main() {
 		name := c.FormValue("name")
 		team := createTeam(name, team_id)
 		listofTeams.Teams = append(listofTeams.Teams, team)
+
 		c.Render(200, "team", team)
 		if team_id >= 4 {
 			return c.Render(200, "nothing", nil)
@@ -192,14 +143,6 @@ func main() {
 			return c.Render(200, "team-form", nil)
 		}
 		return c.Render(200, "add-team", nil)
-	})
-
-	e.GET("/testing", func(c echo.Context) error {
-		categories, err := readcategories()
-		if err != nil {
-			return err
-		}
-		return c.JSON(200, categories)
 	})
 
 	tailwindHandler := twhandler.New(http.Dir("css"), "/css", twembed.New())
