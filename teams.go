@@ -2,7 +2,7 @@ package main
 
 type team struct {
 	Name   string
-	id     int
+	ID     int
 	Points int
 }
 
@@ -13,7 +13,7 @@ type teams struct {
 func createTeam(name string, id int) team {
 	return team{
 		Name:   name,
-		id:     id,
+		ID:     id,
 		Points: 0,
 	}
 }

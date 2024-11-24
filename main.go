@@ -64,6 +64,7 @@ func main() {
 	}
 
 	e.GET("/", func(c echo.Context) error {
+		team_id = 0 // take this out before solution in websockets
 		return c.Render(200, "index", categories)
 	})
 
@@ -86,30 +87,39 @@ func main() {
 
 		c.Render(200, "team", team)
 		if team_id >= 4 {
-			return c.Render(200, "nothing", nil)
+			// take out the question shield
+			return c.Render(200, "oob-cover", nil)
 		}
 		return c.Render(200, "oob-add-team", nil)
 	})
 
-	e.POST("/host/team/:id", func(c echo.Context) error {
-		winnerteam := team{}
-		idStr := c.Param("id")
-		id, err := strconv.Atoi(idStr)
+	e.POST("/yes-team", func(c echo.Context) error {
+		return c.Render(200, "team-form", nil)
+
+	})
+
+	e.POST("/no-team", func(c echo.Context) error {
+		if team_id > 1 {
+			// take out the question shield
+			return c.Render(200, "oob-cover", nil)
+		}
+		return c.Render(200, "add-team", nil)
+	})
+
+	e.POST("/host/team/:team_id/:question_id", func(c echo.Context) error {
+		team_id := c.Param("team_id")
+		team_id_int, err := strconv.Atoi(team_id)
 		if err != nil {
-			fmt.Println("not a number")
+			fmt.Println("team_id is not a number")
 		}
-		points := c.Param("points") //hx-vals
-		pointstoappend, err := strconv.Atoi(points)
+		question_id := c.Param("team_id")
+		question_id_int, err := strconv.Atoi(question_id)
 		if err != nil {
-			fmt.Println("not a number")
-		}
-		for _, team := range listofTeams.Teams {
-			if id == team.id {
-				team.Points += pointstoappend
-				winnerteam = team
-			}
-		}
-		return c.Render(200, "points", winnerteam.Points)
+			fmt.Println("question_id is not a number")
+		} // case
+
+		winnerteam := addpointstoteam(categories, listofTeams, question_id_int, team_id_int)
+		return c.Render(200, "oob-points", winnerteam)
 	})
 
 	e.POST("/host/team/:id", func(c echo.Context) error {
@@ -125,24 +135,12 @@ func main() {
 			fmt.Println("not a number")
 		}
 		for _, team := range listofTeams.Teams {
-			if id == team.id {
+			if id == team.ID {
 				team.Points += pointstoappend
 				winnerteam = team
 			}
 		}
 		return c.Render(200, "points", winnerteam.Points)
-	})
-
-	e.POST("/add-team", func(c echo.Context) error {
-
-		add := c.FormValue("add")
-		if add != "yes" && team_id > 1 {
-			return c.Render(200, "nothing", nil)
-		}
-		if add == "yes" {
-			return c.Render(200, "team-form", nil)
-		}
-		return c.Render(200, "add-team", nil)
 	})
 
 	tailwindHandler := twhandler.New(http.Dir("css"), "/css", twembed.New())

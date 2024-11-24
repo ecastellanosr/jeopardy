@@ -1,41 +1,38 @@
-[
-    {
-        "title": "first-title",
-        "number": "",
-        "cards": [
-            {
-                "number": "100",
-                "question": "What is the capital of France?",
-                "answer": "Paris",
-                "hasimg": false,
-                "imgname": ""
-            },
-            {
-                "number": "200",
-                "question": "What is the capital of the UK?",
-                "answer": "London",
-                "hasimg": false,
-                "imgname": ""
-            },{
-                "number": "300",
-                "question": "What is the capital of Canada?",
-                "answer": "Ottowa",
-                "hasimg": false,
-                "imgname": ""
-            },
-            {
-                "number": "400",
-                "question": "What is the capital of Mexico?",
-                "answer": "CDMX",
-                "hasimg": false,
-                "imgname": ""
-            },{
-                "number": "500",
-                "question": "What is the capital of Peru?",
-                "answer": "Lima",
-                "hasimg": false,
-                "imgname": ""
-            }
-        ]
-    }
-]
+{
+    "title": "title-example",
+    "cards": [
+        {
+            "number": "100",
+            "question": "What is the capital of France?",
+            "answer": "Paris",
+            "hasimg": false,
+            "imgname": ""
+        },
+        {
+            "number": "200",
+            "question": "Show an image of a cat.",
+            "answer": "Paris",
+            "hasimg": false,
+            "imgname": ""
+        },{
+            "number": "300",
+            "question": "What is the capital of France?",
+            "answer": "Paris",
+            "hasimg": false,
+            "imgname": ""
+        },
+        {
+            "number": "400",
+            "question": "Show an image of a cat.",
+            "answer": "Paris",
+            "hasimg": false,
+            "imgname": ""
+        },{
+            "number": "500",
+            "question": "What is the capital of France?",
+            "answer": "Paris",
+            "hasimg": false,
+            "imgname": ""
+        }
+    ]
+}
