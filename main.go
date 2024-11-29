@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"text/template"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/gotailwindcss/tailwind/twembed"
@@ -52,8 +53,9 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.Static("/css", "/css")
-	e.Static("/scripts", "/scripts")
+	e.Static("/css", "./css")
+	e.Static("/scripts", "./scripts")
+	e.Static("/imgs", "./imgs")
 
 	listofTeams := NewTeams()
 	team_id := 0 //start the id teams
@@ -72,10 +74,26 @@ func main() {
 		return c.Render(200, "host", categories)
 	})
 
-	e.POST("/question", func(c echo.Context) error {
-		number := c.FormValue("number")
-		fmt.Println(number)
-		return c.Render(200, "clicked-card", number)
+	e.POST("/question/:id", func(c echo.Context) error {
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			return c.Render(500, "nothing", nil)
+		}
+		card := FindCard(categories, id)
+		return c.Render(200, "clicked-card", card)
+		// c.Render(200, "question-cover", card)
+	})
+
+	e.POST("/revealquestion/:id", func(c echo.Context) error {
+		time.Sleep(10 * time.Second)
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			return c.Render(500, "nothing", nil)
+		}
+		card := FindCard(categories, id)
+		return c.Render(200, "question-cover", card)
 	})
 
 	e.POST("/teams", func(c echo.Context) error {

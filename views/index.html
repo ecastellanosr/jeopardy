@@ -7,10 +7,11 @@
     <title>Jeopardy Main Page</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+    <link rel="stylesheet" href="./css/main.css">
 </head>
-<body class="bg-cyan-700">
+<body class="bg-gradient-to-tr from-blue-950 from-50% to-blue-900 h-screen">
     <div class="container mx-auto">
-        <div class="text-4xl text-center">JEOPARDY</div>
+        <div class="text-4xl text-center text-white">JEOPARDY</div>
         {{template "table" .}}
 
         <div id="teams" class="flex justify-around p-2 gap-4 text-center max-w-7xl mx-auto align-middle">
@@ -24,7 +25,8 @@
 {{ end }}
 
 {{block "table" .}}
-        <div id="cards" class="bg-black grid grid-flow-col grid-rows-[auto,repeat(5,1fr)] auto-cols-fr relative p-2 gap-2 text-center max-w-7xl mx-auto text-4xl text-white empty:hidden">
+        <div id="cards" class=" grid grid-flow-col grid-rows-[auto,repeat(5,1fr)] auto-cols-fr gap-4 text-center max-w-7xl mx-auto text-4xl text-white overflow-hidden relative">
+            {{template "titles" .}}
             {{template "column" .}}
             <div id="cover" class="absolute min-h-full min-w-full cursor-default opacity-0"></div>
         </div>
@@ -34,25 +36,69 @@
 <div id="cover" hx-swap-oob="true" class="hidden"></div>
 {{end}}
 
-{{block "column" .}}
-{{$categories := .}}
+{{block "titles" .}}
+<div class="grid grid-cols-subgrid col-span-6 row-span-1 border-b-2 gap-4">
+    {{$categories := .}}
     {{ range $category := $categories}}
-        <div class="bg-blue-950 py-4 flex justify-center items-center">
+        <div id="category" class=" py-4 flex justify-center items-center">
             {{$category.Title}}
         </div>
+    {{end}}
+</div>
+{{end}}
 
+{{block "column" .}}
+{{$categories := .}}
+<div class="grid grid-rows-subgrid  grid-flow-col row-span-5 col-span-6 overflow-hidden relative gap-4">
+    {{ range $category := $categories}}
         {{range $card := $category.Cards}}
-            <div id="card{{$card.ID}}" hx-post="/question" hx-swap="outerHTML" hx-trigger="click" hx-vals='{"number": "{{ .Number }}"}' class="bg-blue-950 py-3 flex justify-center items-center cursor-pointer">
-                {{$card.Number}}
-            </div>
+            <div id="card{{$card.ID}}" hx-post="/question/{{$card.ID}}" hx-swap="outerHTML swap:500ms" hx-trigger="click" hx-vals='{"number": "{{ .Number }}"}' class="bg-cyan-700 rounded-md py-3 flex justify-center items-center cursor-pointer card">
+                    {{$card.Number}}
+                </div>
         {{end}}
     {{end}}
+</div>
 {{end}}
 
 {{block "clicked-card" .}}
-<div class="bg-blue-800 py-3 flex justify-center items-center">
-    {{ . }}
+<div id="clicked-card" hx-post="revealquestion/{{.ID}}" hx-swap="outerHTML" hx-trigger="revealed" class="absolute bg-cyan-100 rounded-md py-4 flex flex-col items-center justify-center cursor-pointer text-black clicked-card">
+    {{ .Number }}
 </div>
+<div></div>
+{{end}}
+
+{{block "question-cover" .}}
+<div id="question-cover" class="absolute bottom-0 flex flex-col items-center justify-between min-w-full cursor-default bg-blue-300 p-8 min-h-100 opacity-100"> 
+        {{template "oob-question" .}}
+    </div>
+{{end}}
+
+{{block "no-question" .}}
+<div id="question" class="flex flex-col items-center justify-between"></div>    
+{{end}}
+
+{{block "test-question" .}}
+<div id="question" class="flex  flex-col items-center justify-between">
+    <div>
+        Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet
+    </div>
+    <div> <img src="./imgs/category1_question1.png" alt="" class="max-h-64"></div>
+</div>    
+{{end}}
+
+{{block "oob-question" .}}
+    <div id="question" class="flex  flex-col items-center justify-between"> 
+        {{if .HasQImg}}
+        <div>
+            {{.Question}}
+        </div>
+        {{end}}
+        {{if .HasQImg}}
+            <div>
+                <img src="./imgs/{{.QImgName}}" alt="" class="max-h-32">
+            </div>
+        {{end}}
+    </div>
 {{end}}
 
 {{ block "teams" .}}
@@ -60,7 +106,7 @@
 {{ end }}
 
 {{ block "add-team" . }}
-    <div id="add-team" class="bg-blue-950 text-white animate-pulse hover:animate-none pb-2 w-3/12">
+    <div id="add-team" class="bg-cyan-700 text-white animate-pulse hover:animate-none pb-2 w-3/12">
         <div>Add Team?</div>
         <div>
             <button hx-swap="outerHTML" hx-target="#add-team" hx-post="/yes-team" hx-vals='{"add":"yes"}' class="border-2 border-green-900 bg-green-600 px-4 hover:cursor-pointer">  Yes  </button>
@@ -71,7 +117,7 @@
 
 {{ block "oob-add-team" . }}
     <div id="teams" hx-swap-oob="beforeend" >
-        <div id="add-team"  class="bg-blue-950 text-white animate-pulse hover:animate-none pb-2 w-3/12">
+        <div id="add-team"  class="bg-cyan-700 text-white animate-pulse hover:animate-none pb-2 w-3/12">
             <div>Add Team?</div>
             <div>
                 <button hx-swap="outerHTML" hx-target="#add-team" hx-post="/yes-team" class="border-2 border-green-900 bg-green-600 px-4 hover:cursor-pointer">  Yes  </button>
@@ -82,7 +128,7 @@
 {{end}}
 
 {{ block "team-form" . }}
-    <div id="team-form" class="flex flex-col px-8 w-3/12">
+    <div id="team-form" class="flex flex-col px-8 w-3/12 text-white">
         <form hx-post="/teams" hx-swap="outerHTML" hx-target="#team-form">
             Team Name: <input type="text" name="name" class="text-black">
             <button type="submit">Submit team</button>
@@ -91,7 +137,7 @@
 {{end}}
 
 {{ block "team" . }}
-    <div id="team-{{.ID}}" class="divide-y-2 divide-black opacity-100 w-3/12 flex flex-col justify-center">
+    <div id="team-{{.ID}}" class="divide-y-2 divide-white text-white opacity-100 w-3/12 flex flex-col justify-center">
         <div>{{.Name}}</div>
         {{template "points" .}}
 {{end}}
@@ -102,8 +148,5 @@
 
 {{block "oob-points" .}}
 <div id="points-{{.ID}}" hx-swap-oob="outerHTML">{{.Points}} Points</div>
-{{end}}
-
-{{ block "nothing" .}}
 {{end}}
 

@@ -51,10 +51,10 @@ func readcategories() ([]Category, error) {
 	return categories, nil
 }
 
-func addpointstoteam(categories []Category, teams *teams, question_id, team_id int) team {
-	winnerteam := team{}
-	points := 0
+func FindCard(categories []Category, question_id int) Card {
+	Looked_card := Card{}
 	category_id := 0
+
 	switch {
 	case question_id < 10:
 		break
@@ -73,10 +73,19 @@ func addpointstoteam(categories []Category, teams *teams, question_id, team_id i
 	card_id := question_id
 	for _, card := range categories[category_id].Cards {
 		if card_id == card.ID {
-			card_points, _ := strconv.Atoi(card.Number)
-			points = card_points
+			Looked_card = card
 		}
 	}
+	return Looked_card
+}
+
+func addpointstoteam(categories []Category, teams *teams, question_id, team_id int) team {
+	winnerteam := team{}
+	points := 0
+
+	card := FindCard(categories, question_id)
+	card_points, _ := strconv.Atoi(card.Number)
+	points = card_points
 
 	for _, team := range teams.Teams {
 		if team_id == team.ID {
