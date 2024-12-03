@@ -14,35 +14,18 @@
     transition:background-color 500ms linear, color 300ms ease-in;
 }
 
-/* .clicked-card {
-    width: 100%;
-    height: 78%;
-    transform: scale(0.5); */
-    /* transform: translate(0px, 0px) scale(1);
-    
-  } */
-
-.clicked-card.htmx-request{
-    grid-column: 1 / -1; /* Take up all columns  */
-    grid-row: 1 / -1; /* Take up all rows */
-    z-index: 10; /* Ensure it appears on top */    
-    /* bottom: 0;
-    transform: scale(1); */
-    transition:  all 2s;  
-} */
-
-.tclicked-card {
-    height: 0;
-    width: 0;
-    /* transform: translate(0px, 0px) scale(1); */
+.Q-animation-holder{
+    width: var(--width);
+    height: var(--height);
+    left: var(--x);
+    bottom: var(--y); 
+    transform:  scale(var(--Ratiox),var(--Ratioy)); /* translate(var(--x), var(--x)) */
   }
 
-.tclicked-card.htmx-request{
-    transform: translate(0, 0);
-
-    /* transform-origin: -100% 50%; */
-    width: 100%;
-    height: 78%;
-    transition:  height 2s, width 2s, translate 2s;
-    overflow: hidden;   
+.Q-animation{
+    transition:  all 2s; 
+    z-index: 10; /* Ensure it appears on top */    
+    left: 0;
+    bottom: 0;
+    transform: scale(1,1); /* translate(var(--x), var(--x)) */
 }

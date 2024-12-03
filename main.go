@@ -81,8 +81,7 @@ func main() {
 			return c.Render(500, "nothing", nil)
 		}
 		card := FindCard(categories, id)
-		return c.Render(200, "clicked-card", card)
-		// c.Render(200, "question-cover", card)
+		return c.Render(200, "testdeletedquestion", card)
 	})
 
 	e.POST("/revealquestion/:id", func(c echo.Context) error {
