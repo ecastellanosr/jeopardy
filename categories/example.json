@@ -1,38 +1,48 @@
 {
-    "title": "title-example",
+    "title": "title",
     "cards": [
         {
             "number": "100",
             "question": "What is the capital of France?",
             "answer": "Paris",
-            "hasimg": false,
-            "imgname": ""
+            "HasQImg": true,
+            "QImgName": "category1_question1.png",
+            "HasAImg" : false,
+            "AImgName" : "category1_answer1.png"
         },
         {
             "number": "200",
             "question": "Show an image of a cat.",
             "answer": "Paris",
-            "hasimg": false,
-            "imgname": ""
+            "HasQImg": true,
+            "QImgName": "category1_question2.png",
+            "HasAImg" : false,
+            "AImgName" : ""
         },{
             "number": "300",
             "question": "What is the capital of France?",
             "answer": "Paris",
-            "hasimg": false,
-            "imgname": ""
+            "HasQImg": true,
+            "QImgName": "category1_question3.png",
+            "HasAImg" : false,
+            "AImgName" : ""
         },
         {
             "number": "400",
             "question": "Show an image of a cat.",
             "answer": "Paris",
-            "hasimg": false,
-            "imgname": ""
+            "HasQImg": true,
+            "QImgName": "category1_question4.png",
+            "HasAImg" : false,
+            "AImgName" : ""
         },{
             "number": "500",
             "question": "What is the capital of France?",
             "answer": "Paris",
-            "hasimg": false,
-            "imgname": ""
+            "HasQImg": true,
+            "QImgName": "category1_question5.png",
+            "HasAImg" : false,
+            "AImgName" : ""
         }
     ]
 }

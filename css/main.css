@@ -9,7 +9,7 @@
 }
 
 .card.htmx-swapping {
-    background-color:rgb(207 250 254);
+    background-color:rgb(147 197 253);
     color: black;
     transition:background-color 500ms linear, color 300ms ease-in;
 }

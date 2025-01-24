@@ -7,10 +7,11 @@
     <title>Jeopardy Main Page</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+    <script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
     <link rel="stylesheet" href="./css/main.css">
     <script src="./scripts/question-animation.js"></script>
 </head>
-<body class="bg-gradient-to-tr from-blue-950 from-50% to-blue-900 h-screen">
+<body hx-ext="ws" ws-connect="/ws" class="bg-gradient-to-tr from-blue-950 from-50% to-blue-900 h-screen">
     <div class="container mx-auto">
         <div class="text-4xl text-center text-white">JEOPARDY</div>
         {{template "table" .}}
@@ -48,42 +49,28 @@
 <div id="cards-subgrid" class="grid grid-rows-subgrid grid-flow-col row-span-5 col-span-6 overflow-hidden relative gap-4">
     {{ range $category := $categories}}
         {{range $card := $category.Cards}}
-            <div id="card{{$card.ID}}" hx-post="/question/{{$card.ID}}" hx-swap="outerHTML swap:500ms" hx-trigger="click" hx-vals='{"number": "{{ .Number }}"}' class="bg-cyan-700 rounded-md py-3 flex justify-center items-center cursor-pointer card">
+            <div id="card{{$card.ID}}" hx-post="/question/{{$card.ID}}" hx-swap="outerHTML swap:500ms" hx-trigger="click" hx-vals='{"number": "{{ .Number }}"}' class="bg-cyan-700 rounded-md py-3 flex justify-center items-center cursor-pointer card" ws-send>
                     {{$card.Number}}
                 </div>
         {{end}}
     {{end}}
     <div id="cover" class="absolute min-h-full min-w-full cursor-default opacity-0"></div>
-</div>
-{{end}}
-
-{{ block "oob-cover" .}}
-<div id="cover" hx-swap-oob="true" class="absolute min-h-full min-w-full opacity-100 -z-10">
     {{template "Q-animation" .}}
 </div>
 {{end}}
 
+{{ block "oob-cover" .}}
+<div id="cover" hx-swap-oob="true" class="absolute min-h-full min-w-full opacity-100 -z-10"></div>
+{{end}}
+
 {{block "Q-animation" .}}
-<div id="Q-animation-holder" class="absolute Q-animation-holder bg-cyan-100 rounded-md flex justify-center items-center"></div>
+<div id="Q-animation-holder" class="absolute Q-animation-holder bg-blue-300 rounded-md flex justify-center items-center"></div>
 {{end}}
 
 {{block "question-cover" .}}
-<div id="question-cover" class="absolute bottom-0 flex flex-col items-center justify-between min-w-full cursor-default bg-blue-300 p-8 min-h-full opacity-100"> 
+<div id="question-cover" class="absolute bottom-0 flex flex-col items-center rounded-md justify-between min-w-full cursor-default bg-blue-300 p-8 min-h-full opacity-100 z-20"> 
         {{template "oob-question" .}}
     </div>
-{{end}}
-
-{{block "no-question" .}}
-<div id="question" class="flex flex-col items-center justify-between"></div>    
-{{end}}
-
-{{block "test-question" .}}
-<div id="question" class="flex  flex-col items-center justify-between">
-    <div>
-        Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet
-    </div>
-    <div> <img src="./imgs/category1_question1.png" alt="" class="max-h-64"></div>
-</div>    
 {{end}}
 
 {{block "oob-question" .}}
@@ -95,7 +82,7 @@
         {{end}}
         {{if .HasQImg}}
             <div>
-                <img src="./imgs/{{.QImgName}}" alt="" class="max-h-32">
+                <img src="./imgs/{{.QImgName}}" alt="" class="max-h-52 brightness-0">
             </div>
         {{end}}
     </div>
@@ -130,7 +117,7 @@
 {{ block "team-form" . }}
     <div id="team-form" class="flex flex-col px-8 w-3/12 text-white">
         <form hx-post="/teams" hx-swap="outerHTML" hx-target="#team-form">
-            Team Name: <input type="text" name="name" class="text-black">
+            Team Name: <input type="text" name="name" class="text-black" ws-send>
             <button type="submit">Submit team</button>
         </form>
     </div>
@@ -140,6 +127,7 @@
     <div id="team-{{.ID}}" class="divide-y-2 divide-white text-white opacity-100 w-3/12 flex flex-col justify-center">
         <div>{{.Name}}</div>
         {{template "points" .}}
+    </div>
 {{end}}
 
 {{block "points" .}}
