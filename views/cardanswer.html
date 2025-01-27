@@ -1,0 +1,11 @@
+<div id="question" class="flex flex-col items-center justify-between content-between h-full">
+    <div class="text-3xl border-b-2  w-[90%]">RESPUESTA</div>
+    <div>
+        {{.Answer}}
+    </div>
+    {{if .HasAImg}}
+        <div>
+            <img src="./imgs/{{.AImgName}}" class="max-h-52">
+        </div>
+    {{end}}
+</div>    

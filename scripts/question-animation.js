@@ -1,9 +1,20 @@
-document.addEventListener("click", function (event) {
-    // Run your function
-    if (event.target && event.target.id ==="first-button"){
-        startcalculations();
-    }
-})
+// document.addEventListener("click", function (event) {
+//     // Run your function
+//     if (event.target && event.target.id ==="first-button"){
+//         startcalculations();
+//     }
+// })
+
+window.addEventListener("load", (event) => {
+    startcalculations();
+});
+
+// document.addEventListener("click", function (event) {//for host 
+//     // Run your function
+//     if (event.target && event.target.id ==="first-button"){
+//         startcalculations();
+//     }
+// })
 
 function startcalculations() {
     console.log("its working")

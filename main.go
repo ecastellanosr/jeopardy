@@ -45,8 +45,6 @@ func main() {
 	e := echo.New()
 	e.Renderer = newTemplate()
 
-	// initialize a user manager
-	manager := NewManager()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	// let server use the css, scripts and imgs folders
@@ -58,6 +56,8 @@ func main() {
 	team_id := 0 //start the id teams
 
 	categories, err := readcategories()
+	// initialize a user manager
+	manager := NewManager(categories)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -70,50 +70,12 @@ func main() {
 		return c.Render(200, "host", categories)
 	})
 
-	e.POST("/question/:id", func(c echo.Context) error {
-		idStr := c.Param("id")
-		id, err := strconv.Atoi(idStr)
-		if err != nil {
-			return c.Render(500, "nothing", nil)
-		}
-		card := FindCard(categories, id)
-		return c.Render(200, "deletedquestion", card)
-	})
-
-	e.POST("/revealquestion/:id", func(c echo.Context) error {
-		// time.Sleep(1 * time.Second)
-		idStr := c.Param("id")
-		id, err := strconv.Atoi(idStr)
-		if err != nil {
-			return c.Render(500, "nothing", nil)
-		}
-		card := FindCard(categories, id)
-		return c.Render(200, "question-cover", card)
-	})
-
 	e.POST("/teams", func(c echo.Context) error {
 		team_id++
 
 		name := c.FormValue("name")
 		team := createTeam(name, team_id)
 		listofTeams.Teams = append(listofTeams.Teams, team)
-
-		// // function that sends a message to all host == true clients
-		// for client := range manager.clients {
-		// 	if client.host == true {
-		// 		log.Println("posting teams to host")
-		// 		tmpl := c.Echo().Renderer.(*Template)
-		// 		rendered, err := tmpl.WSRender("test-host-team", team, c)
-		// 		if err != nil {
-		// 			log.Printf("could not send the team name to the host")
-		// 		}
-		// 		err = client.connection.WriteMessage(websocket.TextMessage, rendered)
-		// 		if err != nil {
-		// 			log.Printf("could not send the team name to the host")
-		// 		}
-
-		// 	}
-		// }
 		c.Render(200, "team", team)
 		if team_id >= 4 {
 			// take out the question shield
@@ -135,41 +97,51 @@ func main() {
 		return c.Render(200, "add-team", nil)
 	})
 
-	e.POST("/host/addpoints/:team_id/:question_id", func(c echo.Context) error {
-		team_id := c.Param("team_id")
-		team_id_int, err := strconv.Atoi(team_id)
-		if err != nil {
-			fmt.Println("team_id is not a number")
-		}
-		question_id := c.Param("team_id")
-		question_id_int, err := strconv.Atoi(question_id)
-		if err != nil {
-			fmt.Println("question_id is not a number")
-		} // case
-
-		winnerteam := addpointstoteam(categories, listofTeams, question_id_int, team_id_int)
-		return c.Render(200, "oob-points", winnerteam)
-	})
-
-	e.POST("/host/team/:id", func(c echo.Context) error {
-		winnerteam := team{}
+	e.POST("/clientquestion/:id", func(c echo.Context) error {
 		idStr := c.Param("id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			fmt.Println("not a number")
+			return c.Render(500, "nothing", nil)
 		}
-		points := c.Param("points")
-		pointstoappend, err := strconv.Atoi(points)
+		card := FindCard(categories, id)
+		return c.Render(200, "deletedquestion", card)
+	})
+
+	e.POST("/clientrevealquestion/:id", func(c echo.Context) error {
+		// time.Sleep(1 * time.Second)
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			fmt.Println("not a number")
+			return c.Render(500, "nothing", nil)
 		}
-		for _, team := range listofTeams.Teams {
-			if id == team.ID {
-				team.Points += pointstoappend
-				winnerteam = team
-			}
+		card := FindCard(categories, id)
+		return c.Render(200, "question-cover", card)
+	})
+
+	e.POST("/hostquestion/:id", func(c echo.Context) error {
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			return c.Render(500, "nothing", nil)
 		}
-		return c.Render(200, "points", winnerteam.Points)
+		card := FindCard(categories, id)
+		return c.Render(200, "hostdeletedquestion", card)
+	})
+
+	e.POST("/hostrevealquestion/:id", func(c echo.Context) error {
+		// time.Sleep(1 * time.Second)
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			return c.Render(500, "nothing", nil)
+		}
+		card := FindCard(categories, id)
+		return c.Render(200, "host-question-cover", card)
+	})
+
+	e.DELETE("/QuestionCover", func(c echo.Context) error {
+		// time.Sleep(1 * time.Second)
+		return c.NoContent(http.StatusOK)
 	})
 
 	tailwindHandler := twhandler.New(http.Dir("css"), "/css", twembed.New())

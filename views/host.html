@@ -8,6 +8,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
         <script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
+        <script src="./scripts/question-animation.js"></script>
     </head>
     <body hx-ext="ws" ws-connect="/wshost" class="bg-gradient-to-tr from-blue-950 from-50% to-blue-900 h-screen">
         <div class="container mx-auto">
@@ -36,20 +37,22 @@
 <div id="cards-subgrid" class="grid grid-rows-subgrid grid-flow-col row-span-5 col-span-6 overflow-hidden relative gap-4">
     {{ range $category := $categories}}
         {{range $card := $category.Cards}}
-            <div id="card{{$card.ID}}" hx-post="/question/{{$card.ID}}" hx-swap="outerHTML swap:500ms" hx-trigger="click" hx-vals='{"number": "{{ .Number }}"}' class="bg-cyan-700 rounded-md py-3 flex justify-center items-center cursor-pointer card">
+            <div id="card{{$card.ID}}" hx-post="/question/{{$card.ID}}" hx-swap="outerHTML" hx-vals='{"number": "{{ .Number }}"}' class="bg-cyan-700 rounded-md py-3 flex justify-center items-center cursor-pointer card">
                     {{$card.Number}}
                 </div>
         {{end}}
+        {{template "Q-animation" .}}
     {{end}}
-    {{template "host-question-cover" .}}
+
 </div>
 {{end}}
 
 {{block "host-question-cover" .}}
 <div id="question-cover" class="absolute bottom-0 grid grid-cols-2 auto-cols-fr text-center items-center rounded-md justify-between min-w-full cursor-default bg-blue-300 p-8 min-h-full opacity-100 z-20"> 
-        {{template "test-question" .}}
-        {{template "test-answer" .}}
-    </div>
+    {{template "test-question" .}}
+    {{template "test-answer" .}}
+</div>
+<div class="rounded-md py-3 flex justify-center items-center opacity-0"></div>
 {{end}}
 
 
@@ -57,10 +60,13 @@
 <div id="question" class="flex flex-col items-center justify-between border-r-2 h-full">
     <div class="text-3xl border-b-2 w-[90%]">PREGUNTA</div>
     <div class="text-2xl">
-        Escritor, guionista, editor de libros y periodista colombiano. En 1982 recibió el Premio Nobel de Literatura.
+        {{.Question}}
     </div>
-    
-    <div> <img src="./imgs/category1_question1.png"  class="max-h-52 brightness-0"></div>
+    {{if .HasAImg}}
+            <div>
+                <img src="./imgs/{{.QImgName}}" alt="" class="max-h-52 brightness-0">
+            </div>
+        {{end}}
 </div>    
 {{end}}
 
@@ -68,9 +74,13 @@
 <div id="question" class="flex flex-col items-center justify-between content-between h-full">
     <div class="text-3xl border-b-2  w-[90%]">RESPUESTA</div>
     <div>
-        Gabriel Garcia Marquez
+        {{.Answer}}
     </div>
-    <div> <img src="./imgs/category1_question1.png" class="max-h-52"></div>
+    {{if .HasAImg}}
+            <div>
+                <img src="./imgs/{{.AImgName}}" alt="" class="max-h-52">
+            </div>
+        {{end}}
 </div>    
 {{end}}
 
@@ -99,7 +109,11 @@
 {{end}}
 
 {{block "reveal-button" .}}
-<div id="reveal-button" class=" text-white opacity-100 w-[10%] flex flex-col justify-center">
-    <button hx-swap="outerHTML" hx-post="/RevealAnswer" class="border-2 border-green-900 bg-green-600 px-4 hover:cursor-pointer hover:bg-green-700">  Reveal Answer  </button>
+<div  class=" text-white opacity-100 w-[10%] flex flex-col justify-center">
+    <button id="reveal-button" hx-swap="outerHTML" hx-trigger="click" ws-send class="border-2 border-green-900 bg-green-600 px-4 hover:cursor-pointer hover:bg-green-700">  Reveal Answer  </button>
 </div>
+{{end}}
+
+{{block "hostdeletedquestion" .}}
+<div id="deletedquestion{{.ID}}" hx-post="clientrevealquestion/{{.ID}}" hx-swap="outerHTML" hx-trigger="revealed delay:2s" class="rounded-md py-3 flex justify-center items-center opacity-0">100</div>
 {{end}}

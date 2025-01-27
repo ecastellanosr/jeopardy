@@ -1,15 +1,15 @@
 <div id="teams" hx-swap-oob="beforeend">
-    <div id="{{.Name}}" class="text-white opacity-100 w-1/4 flex flex-col justify-center items-center">
+    <div id="team-{{.ID}}" class="text-white opacity-100 w-1/4 flex flex-col justify-center items-center">
         <div class="border-b-2 border-white w-full"> {{.Name}}</div>
-    {{template "test-points" .}}
+    {{template "points" .}}
     {{template "addpoints" .}}
     </div>
 </div>
 
-{{block "test-points" .}}
-<div id="test-points">{{.Points}} Points</div>
+{{block "points" .}}
+<div id="team{{.ID}}-points">{{.Points}} Points</div>
 {{end}}
 
 {{block "addpoints" .}}
-<button hx-swap="outerHTML" hx-post="/host/addpoints/{{.ID}}/question_id" class="border-2 border-green-900 w-1/2 bg-green-600 hover:cursor-pointer py-1 hover:bg-green-700">  Add Points  </button>
+<button id="addpoints-{{.ID}}" hx-swap="outerHTML" ws-send class="border-2 border-green-900 w-1/2 bg-green-600 hover:cursor-pointer py-1 hover:bg-green-700">  Add Points  </button>
 {{end}}

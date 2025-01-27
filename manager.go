@@ -1,28 +1,37 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"sync"
-	"text/template"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 )
 
 type Manager struct {
-	clients   ClientList
-	broadcast chan *Message
-	teams     []team
-	messages  []*Message
+	clients        ClientList
+	broadcast      chan *Message
+	teams          []team
+	categories     []Category
+	messages       []*Message
+	currentcard    int
+	currentTeam    team
+	currentTeamID  int
+	answerRevealed bool
 	sync.RWMutex
 }
 
-func NewManager() *Manager {
+func NewManager(c []Category) *Manager {
 	return &Manager{
-		clients:   make(ClientList),
-		broadcast: make(chan *Message),
+		clients:        make(ClientList),
+		broadcast:      make(chan *Message),
+		categories:     c,
+		currentcard:    0,
+		currentTeamID:  1,
+		answerRevealed: false,
 	}
 }
 
@@ -80,18 +89,62 @@ func (m *Manager) removeClient(client *Client) {
 }
 
 func (m *Manager) ListenBroadcast(c echo.Context) {
-	team_id := 0
 	for {
 		select {
 		case msg := <-m.broadcast:
 			if msg.Type == "team-form" {
-				team := createTeam(msg.Text, team_id)
+				if m.currentTeamID >= 4 {
+					continue
+				}
+				team := createTeam(msg.Text, m.currentTeamID)
 				m.teams = append(m.teams, team)
+				m.currentTeamID++
+				for client := range m.clients {
+					if client.host != true {
+						continue
+					}
+					select {
+					case client.egress <- addTeamTemplate(&m.teams[(team.ID - 1)]):
+						log.Println("this is the name of the team that was sent:", m.teams[(team.ID-1)].Name)
+					default:
+						close(client.egress)
+						m.removeClient(client)
+					}
+
+				}
+
+			}
+			if strings.HasPrefix(msg.Type, "card") {
+				cardN, _ := strings.CutPrefix(msg.Type, "card")
+				id, err := strconv.Atoi(cardN)
+				if err != nil {
+					log.Printf("error while converting the card number in wsmessage, %s", err)
+					continue
+				}
+				card := FindCard(m.categories, id)
 				for client := range m.clients {
 					if client.host == true {
+						HostCard := CardSelection{
+							ClientStatus: "host",
+							ID:           card.ID,
+							Number:       card.Number,
+						}
 						select {
-						case client.egress <- addTeamTemplate(&m.teams[team_id]):
-							team_id++
+						case client.egress <- showSelectedCard(HostCard):
+						default:
+							close(client.egress)
+							m.removeClient(client)
+						}
+					}
+					if client.host == false {
+						ClientCard := CardSelection{
+							ClientStatus: "client",
+							ID:           card.ID,
+							Number:       card.Number,
+						}
+						m.currentcard = card.ID //as the new card is being selected the current card is changed
+						select {
+						case client.egress <- showSelectedCard(ClientCard):
 						default:
 							close(client.egress)
 							m.removeClient(client)
@@ -99,21 +152,69 @@ func (m *Manager) ListenBroadcast(c echo.Context) {
 					}
 				}
 			}
-
+			if msg.Type == "reveal-button" {
+				if m.currentcard == 0 {
+					continue
+				}
+				m.answerRevealed = true
+				card := FindCard(m.categories, m.currentcard)
+				for client := range m.clients {
+					if client.host == true {
+						continue
+					}
+					select {
+					case client.egress <- showCardAnswer(card):
+					default:
+						close(client.egress)
+						m.removeClient(client)
+					}
+				}
+			}
+			if strings.HasPrefix(msg.Type, "addpoints-") {
+				if m.currentcard == 0 || m.answerRevealed == false {
+					continue
+				}
+				teamID_string, _ := strings.CutPrefix(msg.Type, "addpoints-")
+				teamID, err := strconv.Atoi(teamID_string)
+				if err != nil {
+					log.Println("this is the teamidstring cut:", teamID_string)
+					log.Printf("error while converting the team ID to an int in wsmessage, %s", err)
+					continue
+				}
+				for i, team := range m.teams {
+					if team.ID != teamID {
+						continue
+					}
+					card := FindCard(m.categories, m.currentcard)
+					cardpoints, err := strconv.Atoi(card.Number)
+					if err != nil {
+						log.Printf("error while converting the card number points to an int in wsmessage, %s", err)
+						continue
+					}
+					m.teams[i].Points += cardpoints
+					log.Println("current points of team:", m.teams[i].Points, "cardpoints:", cardpoints)
+					m.currentTeam = m.teams[i]
+					log.Println("current points of currentteam:", m.currentTeam.Points, m.currentTeam.Name, m.currentTeamID)
+				}
+				for client := range m.clients {
+					select {
+					case client.egress <- addpoints(m.currentTeam):
+						client.egress <- resetQanimation()
+						client.egress <- removeQuestionCover()
+					// case client.egress <- resetQanimation():
+					default:
+						close(client.egress)
+						m.removeClient(client)
+					}
+				}
+				m.currentTeam = team{
+					Name:   "",
+					ID:     0,
+					Points: 0,
+				}
+				m.currentcard = 0
+				m.answerRevealed = false
+			}
 		}
 	}
-}
-
-func addTeamTemplate(team *team) []byte {
-	tmpl, err := template.ParseFiles("views/team.html")
-	if err != nil {
-		log.Fatalf("template parsing: %s", err)
-	}
-	var renderedMessage bytes.Buffer
-	err = tmpl.Execute(&renderedMessage, team)
-	if err != nil {
-		log.Fatalf("template parsing: %s", err)
-	}
-	log.Printf("this got to here, before sending the bytes to the host")
-	return renderedMessage.Bytes()
 }
