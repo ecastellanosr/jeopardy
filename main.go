@@ -52,7 +52,6 @@ func main() {
 	e.Static("/scripts", "./scripts")
 	e.Static("/imgs", "./imgs")
 	// initialize a new list of teams
-	listofTeams := NewTeams()
 	team_id := 0 //start the id teams
 
 	categories, err := readcategories()
@@ -63,11 +62,12 @@ func main() {
 	}
 	e.GET("/", func(c echo.Context) error {
 		team_id = 0 // take this out before solution in websockets
-		return c.Render(200, "index", categories)
+
+		return c.Render(200, "index", manager.categoriesandteams)
 	})
 
 	e.GET("/host", func(c echo.Context) error {
-		return c.Render(200, "host", categories)
+		return c.Render(200, "host", manager.categoriesandteams)
 	})
 
 	e.POST("/teams", func(c echo.Context) error {
@@ -75,9 +75,8 @@ func main() {
 
 		name := c.FormValue("name")
 		team := createTeam(name, team_id)
-		listofTeams.Teams = append(listofTeams.Teams, team)
 		c.Render(200, "team", team)
-		if team_id >= 4 {
+		if manager.currentTeamID > 4 {
 			// take out the question shield
 			return c.Render(200, "oob-cover", nil)
 		}
@@ -90,8 +89,9 @@ func main() {
 	})
 
 	e.POST("/no-team", func(c echo.Context) error {
-		if team_id > 1 {
+		if manager.currentTeamID > 2 {
 			// take out the question shield
+			manager.categoriesandteams.Fullteams = true
 			return c.Render(200, "oob-cover", nil)
 		}
 		return c.Render(200, "add-team", nil)
@@ -103,7 +103,7 @@ func main() {
 		if err != nil {
 			return c.Render(500, "nothing", nil)
 		}
-		card := FindCard(categories, id)
+		card, _ := FindCard(categories, id)
 		return c.Render(200, "deletedquestion", card)
 	})
 
@@ -114,7 +114,7 @@ func main() {
 		if err != nil {
 			return c.Render(500, "nothing", nil)
 		}
-		card := FindCard(categories, id)
+		card, _ := FindCard(categories, id)
 		return c.Render(200, "question-cover", card)
 	})
 
@@ -124,7 +124,7 @@ func main() {
 		if err != nil {
 			return c.Render(500, "nothing", nil)
 		}
-		card := FindCard(categories, id)
+		card, _ := FindCard(categories, id)
 		return c.Render(200, "hostdeletedquestion", card)
 	})
 
@@ -135,7 +135,7 @@ func main() {
 		if err != nil {
 			return c.Render(500, "nothing", nil)
 		}
-		card := FindCard(categories, id)
+		card, _ := FindCard(categories, id)
 		return c.Render(200, "host-question-cover", card)
 	})
 

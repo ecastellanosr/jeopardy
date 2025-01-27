@@ -15,7 +15,7 @@
             <div  class="text-4xl text-center text-white">JEOPARDY HOST</div>
             {{template "host-table" .}}
             <div id="teams" class="flex justify-around gap-4 text-center max-w-7xl mx-auto align-middle">
-            
+            {{template "teams" .}}
             </div>
             <div class="flex justify-around gap-4 text-center max-w-7xl mx-auto align-middle">
                 {{template "reveal-button" .}}
@@ -33,17 +33,20 @@
 {{end}}
 
 {{block "host-columns" .}}
-{{$categories := .}}
+{{$categories := .Categories}}
 <div id="cards-subgrid" class="grid grid-rows-subgrid grid-flow-col row-span-5 col-span-6 overflow-hidden relative gap-4">
     {{ range $category := $categories}}
         {{range $card := $category.Cards}}
-            <div id="card{{$card.ID}}" hx-post="/question/{{$card.ID}}" hx-swap="outerHTML" hx-vals='{"number": "{{ .Number }}"}' class="bg-cyan-700 rounded-md py-3 flex justify-center items-center cursor-pointer card">
+            {{if $card.Revealed}}
+            <div class="rounded-md py-3 flex justify-center items-center opacity-0"></div>   
+            {{- else}}
+                <div id="card{{$card.ID}}"  hx-swap="outerHTML swap:500ms" hx-trigger="click" hx-vals='{"number": "{{ .Number }}"}' class="bg-cyan-700 rounded-md py-3 flex justify-center items-center cursor-pointer card" ws-send>
                     {{$card.Number}}
                 </div>
+            {{end}}   
         {{end}}
-        {{template "Q-animation" .}}
     {{end}}
-
+    {{template "Q-animation" .}}
 </div>
 {{end}}
 
@@ -85,35 +88,38 @@
 {{end}}
 
 {{ block "host-team" . }}
-    <div id="team" class="text-white opacity-100 w-1/4 flex flex-col justify-center items-center">
-        <div class="border-b-2 border-white w-full">qwerty</div>
-        {{template "test-points" .}}
+    <div id="team-{{.ID}}" class="text-white opacity-100 w-1/4 flex flex-col justify-center items-center">
+        <div class="border-b-2 border-white w-full"> {{.Name}}</div>
+        {{template "host-points" .}}
         {{template "addpoints" .}}
     </div>
 {{end}}
 
-{{ block "test-host-team" . }}
-    <div id="team" class="text-white opacity-100 w-1/4 flex flex-col justify-center items-center">
-        <div class="border-b-2 border-white w-full"> {{.Name}}</div>
-        {{template "test-points" .}}
-        {{template "addpoints" .}}
-    </div>
-{{end}}
 
 {{block "addpoints" .}}
 <button hx-swap="outerHTML" hx-post="/host/addpoints/team_id/question_id" class="border-2 border-green-900 w-1/2 bg-green-600 hover:cursor-pointer py-1 hover:bg-green-700">  Add Points  </button>
 {{end}}
 
-{{block "test-points" .}}
-<div id="test-points">0 Points</div>
+{{block "host-points" .}}
+<div id="team{{.ID}}-points">{{.Points}} Points</div>
 {{end}}
 
 {{block "reveal-button" .}}
+
 <div  class=" text-white opacity-100 w-[10%] flex flex-col justify-center">
     <button id="reveal-button" hx-swap="outerHTML" hx-trigger="click" ws-send class="border-2 border-green-900 bg-green-600 px-4 hover:cursor-pointer hover:bg-green-700">  Reveal Answer  </button>
 </div>
 {{end}}
 
 {{block "hostdeletedquestion" .}}
-<div id="deletedquestion{{.ID}}" hx-post="clientrevealquestion/{{.ID}}" hx-swap="outerHTML" hx-trigger="revealed delay:2s" class="rounded-md py-3 flex justify-center items-center opacity-0">100</div>
+<div id="deletedquestion{{.ID}}" hx-post="hostrevealquestion/{{.ID}}" hx-swap="outerHTML" hx-trigger="revealed delay:2s" class="rounded-md py-3 flex justify-center items-center opacity-0">100</div>
+{{end}}
+
+{{ block "teams" . }}
+{{$teams := .Teams}}
+    {{if .Teams }}
+        {{ range $team := $teams}}
+            {{template "host-team" $team}}
+        {{end}}
+    {{end}}    
 {{end}}

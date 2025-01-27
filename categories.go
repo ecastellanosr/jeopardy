@@ -16,11 +16,18 @@ type Card struct {
 	HasAImg  bool   `json:"hasaimg"`
 	AImgName string `json:"AImgName"`
 	ID       int    `json:"id"`
+	Revealed bool   `json:"Revealed"`
 }
 
 type Category struct {
 	Title string `json:"title"`
 	Cards []Card `json:"cards"`
+}
+
+type categoriesandteams struct {
+	Categories []Category `json:"categories"`
+	Teams      []*team    `json:"teams"`
+	Fullteams  bool       `json:"fullteams"` //all teams are selected, there are no more space or dont want more
 }
 
 func readcategories() ([]Category, error) {
@@ -51,7 +58,7 @@ func readcategories() ([]Category, error) {
 	return categories, nil
 }
 
-func FindCard(categories []Category, question_id int) Card {
+func FindCard(categories []Category, question_id int) (card Card, categorynumber int) {
 	Looked_card := Card{}
 	category_id := 0
 
@@ -76,22 +83,5 @@ func FindCard(categories []Category, question_id int) Card {
 			Looked_card = card
 		}
 	}
-	return Looked_card
-}
-
-func addpointstoteam(categories []Category, teams *teams, question_id, team_id int) team {
-	winnerteam := team{}
-	points := 0
-
-	card := FindCard(categories, question_id)
-	card_points, _ := strconv.Atoi(card.Number)
-	points = card_points
-
-	for _, team := range teams.Teams {
-		if team_id == team.ID {
-			team.Points += points
-			winnerteam = team
-		}
-	}
-	return winnerteam
+	return Looked_card, category_id
 }

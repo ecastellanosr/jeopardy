@@ -36,7 +36,7 @@ func showSelectedCard(card CardSelection) []byte {
 	if err != nil {
 		log.Fatalf("template parsing: %s", err)
 	}
-	log.Printf("this got to ahowselectedCard, before sending the bytes to the host")
+	log.Printf("this got to showselectedCard, before sending the bytes to the host")
 	return renderedMessage.Bytes()
 }
 

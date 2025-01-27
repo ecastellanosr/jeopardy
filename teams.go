@@ -17,9 +17,3 @@ func createTeam(name string, id int) team {
 		Points: 0,
 	}
 }
-
-func NewTeams() *teams {
-	return &teams{
-		Teams: []team{},
-	}
-}

@@ -12,22 +12,27 @@ import (
 )
 
 type Manager struct {
-	clients        ClientList
-	broadcast      chan *Message
-	teams          []team
-	categories     []Category
-	messages       []*Message
-	currentcard    int
-	currentTeam    team
-	currentTeamID  int
-	answerRevealed bool
+	clients            ClientList
+	broadcast          chan *Message
+	categoriesandteams categoriesandteams
+	teams              []team
+	categories         []Category
+	messages           []*Message
+	currentcard        int
+	currentTeam        team
+	currentTeamID      int
+	answerRevealed     bool
 	sync.RWMutex
 }
 
 func NewManager(c []Category) *Manager {
 	return &Manager{
-		clients:        make(ClientList),
-		broadcast:      make(chan *Message),
+		clients:   make(ClientList),
+		broadcast: make(chan *Message),
+		categoriesandteams: categoriesandteams{
+			Categories: c,
+			Fullteams:  false,
+		},
 		categories:     c,
 		currentcard:    0,
 		currentTeamID:  1,
@@ -53,6 +58,10 @@ func (m *Manager) handleWebSocket(c echo.Context) error {
 	go client.readMessages()
 	go client.writeMessages()
 	go client.manager.ListenBroadcast(c)
+	// for i, team := range m.teams {
+	// 	log.Println("adding team:", team.Name)
+	// 	client.egress <- addTeamTemplate(&m.teams[i])
+	// }
 	return nil
 }
 
@@ -69,6 +78,10 @@ func (m *Manager) handleHostWebSocket(c echo.Context) error {
 	go client.readMessages()
 	go client.writeMessages()
 	go client.manager.ListenBroadcast(c)
+	// for i, team := range m.teams {
+	// 	log.Println("adding team:", team.Name)
+	// 	client.egress <- addTeamTemplate(&m.teams[i])
+	// }
 	return nil
 }
 
@@ -84,6 +97,7 @@ func (m *Manager) removeClient(client *Client) {
 
 	if _, ok := m.clients[client]; ok {
 		client.connection.Close()
+		log.Println("a user was deleted")
 		delete(m.clients, client)
 	}
 }
@@ -93,12 +107,16 @@ func (m *Manager) ListenBroadcast(c echo.Context) {
 		select {
 		case msg := <-m.broadcast:
 			if msg.Type == "team-form" {
-				if m.currentTeamID >= 4 {
+				if m.currentTeamID >= 5 {
 					continue
 				}
 				team := createTeam(msg.Text, m.currentTeamID)
 				m.teams = append(m.teams, team)
+				m.categoriesandteams.Teams = append(m.categoriesandteams.Teams, &team)
 				m.currentTeamID++
+				if m.currentTeamID == 4 {
+					m.categoriesandteams.Fullteams = true
+				}
 				for client := range m.clients {
 					if client.host != true {
 						continue
@@ -121,7 +139,12 @@ func (m *Manager) ListenBroadcast(c echo.Context) {
 					log.Printf("error while converting the card number in wsmessage, %s", err)
 					continue
 				}
-				card := FindCard(m.categories, id)
+				card, category_id := FindCard(m.categories, id)
+				for i, revealedcard := range m.categories[category_id].Cards {
+					if card.ID == revealedcard.ID {
+						m.categories[category_id].Cards[i].Revealed = true
+					}
+				}
 				for client := range m.clients {
 					if client.host == true {
 						HostCard := CardSelection{
@@ -157,7 +180,7 @@ func (m *Manager) ListenBroadcast(c echo.Context) {
 					continue
 				}
 				m.answerRevealed = true
-				card := FindCard(m.categories, m.currentcard)
+				card, _ := FindCard(m.categories, m.currentcard)
 				for client := range m.clients {
 					if client.host == true {
 						continue
@@ -185,13 +208,14 @@ func (m *Manager) ListenBroadcast(c echo.Context) {
 					if team.ID != teamID {
 						continue
 					}
-					card := FindCard(m.categories, m.currentcard)
+					card, _ := FindCard(m.categories, m.currentcard)
 					cardpoints, err := strconv.Atoi(card.Number)
 					if err != nil {
 						log.Printf("error while converting the card number points to an int in wsmessage, %s", err)
 						continue
 					}
 					m.teams[i].Points += cardpoints
+					m.categoriesandteams.Teams[i].Points = m.teams[i].Points
 					log.Println("current points of team:", m.teams[i].Points, "cardpoints:", cardpoints)
 					m.currentTeam = m.teams[i]
 					log.Println("current points of currentteam:", m.currentTeam.Points, m.currentTeam.Name, m.currentTeamID)
