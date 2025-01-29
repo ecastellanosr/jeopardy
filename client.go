@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -19,8 +20,9 @@ const (
 )
 
 type Message struct {
-	Text string
-	Type string
+	Text   string
+	Type   string
+	Client Client
 }
 
 type ClientList map[*Client]bool
@@ -30,6 +32,8 @@ type Client struct {
 	manager    *Manager
 	host       bool
 	egress     chan []byte
+	id         string
+	Status     string
 }
 
 type Payload struct {
@@ -44,20 +48,28 @@ type Payload struct {
 }
 
 func NewClient(conn *websocket.Conn, manager *Manager) *Client {
+	NewID := uuid.New()
+	NewIDstring := NewID.String()
 	return &Client{
 		connection: conn,
 		manager:    manager,
 		host:       false,
 		egress:     make(chan []byte),
+		id:         NewIDstring,
+		Status:     "client",
 	}
 }
 
 func NewHost(conn *websocket.Conn, manager *Manager) *Client {
+	NewID := uuid.New()
+	NewIDstring := NewID.String()
 	return &Client{
 		connection: conn,
 		manager:    manager,
 		host:       true,
 		egress:     make(chan []byte),
+		id:         NewIDstring,
+		Status:     "host",
 	}
 }
 
@@ -91,7 +103,7 @@ func (c *Client) readMessages() {
 
 		log.Println("payload name:", mPayload.Name)
 		// send the message to the broadcast channel.
-		c.manager.broadcast <- &Message{Text: mPayload.Name, Type: mPayload.HEADERS.HXTarget}
+		c.manager.broadcast <- &Message{Text: mPayload.Name, Type: mPayload.HEADERS.HXTarget, Client: *c}
 
 	}
 }

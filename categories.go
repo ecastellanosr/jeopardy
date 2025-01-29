@@ -30,6 +30,14 @@ type categoriesandteams struct {
 	Fullteams  bool       `json:"fullteams"` //all teams are selected, there are no more space or dont want more
 }
 
+func NewSelectedCard(card Card, client Client) CardSelection {
+	return CardSelection{
+		ClientStatus: client.Status,
+		ID:           card.ID,
+		Number:       card.Number,
+	}
+}
+
 func readcategories() ([]Category, error) {
 	var categories []Category
 	category_id := 0

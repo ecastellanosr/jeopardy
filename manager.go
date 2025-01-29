@@ -94,10 +94,9 @@ func (m *Manager) addClient(client *Client) {
 func (m *Manager) removeClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-
 	if _, ok := m.clients[client]; ok {
 		client.connection.Close()
-		log.Println("a user was deleted")
+		log.Printf("a %v was deleted", client.Status)
 		delete(m.clients, client)
 	}
 }
@@ -140,39 +139,22 @@ func (m *Manager) ListenBroadcast(c echo.Context) {
 					continue
 				}
 				card, category_id := FindCard(m.categories, id)
+
 				for i, revealedcard := range m.categories[category_id].Cards {
 					if card.ID == revealedcard.ID {
 						m.categories[category_id].Cards[i].Revealed = true
 					}
 				}
+
 				for client := range m.clients {
-					if client.host == true {
-						HostCard := CardSelection{
-							ClientStatus: "host",
-							ID:           card.ID,
-							Number:       card.Number,
-						}
-						select {
-						case client.egress <- showSelectedCard(HostCard):
-						default:
-							close(client.egress)
-							m.removeClient(client)
-						}
+					CardSelected := NewSelectedCard(card, *client)
+					select {
+					case client.egress <- showSelectedCard(CardSelected):
+					default:
+						close(client.egress)
+						m.removeClient(client)
 					}
-					if client.host == false {
-						ClientCard := CardSelection{
-							ClientStatus: "client",
-							ID:           card.ID,
-							Number:       card.Number,
-						}
-						m.currentcard = card.ID //as the new card is being selected the current card is changed
-						select {
-						case client.egress <- showSelectedCard(ClientCard):
-						default:
-							close(client.egress)
-							m.removeClient(client)
-						}
-					}
+					m.currentcard = card.ID
 				}
 			}
 			if msg.Type == "reveal-button" {
@@ -190,6 +172,18 @@ func (m *Manager) ListenBroadcast(c echo.Context) {
 					default:
 						close(client.egress)
 						m.removeClient(client)
+					}
+				}
+			}
+			if msg.Type == "Q-animation-holder" {
+				for client := range m.clients {
+					if client.id == msg.Client.id {
+						select {
+						case client.egress <- resetQanimation():
+						default:
+							close(client.egress)
+							m.removeClient(client)
+						}
 					}
 				}
 			}
@@ -223,9 +217,8 @@ func (m *Manager) ListenBroadcast(c echo.Context) {
 				for client := range m.clients {
 					select {
 					case client.egress <- addpoints(m.currentTeam):
-						client.egress <- resetQanimation()
 						client.egress <- removeQuestionCover()
-					// case client.egress <- resetQanimation():
+
 					default:
 						close(client.egress)
 						m.removeClient(client)

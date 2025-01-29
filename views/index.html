@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
     <script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
     <link rel="stylesheet" href="./css/main.css">
-    <script src="./scripts/question-animation.js"></script>
+    <script src="./scripts/QuestionAnimation.js"></script>
 </head>
 <body hx-ext="ws" ws-connect="/ws" class="bg-gradient-to-tr from-blue-950 from-50% to-blue-900 h-screen">
     <div class="container mx-auto">
@@ -50,7 +50,7 @@
     {{ range $category := $categories}}
         {{range $card := $category.Cards}}
         {{if $card.Revealed}}
-        <div class="rounded-md py-3 flex justify-center items-center opacity-0"></div>   
+        <div id="card{{$card.ID}}" class="rounded-md py-3 flex justify-center items-center opacity-0"></div>   
         {{- else}}
             <div id="card{{$card.ID}}"  hx-swap="outerHTML swap:500ms" hx-trigger="click" hx-vals='{"number": "{{ .Number }}"}' class="bg-cyan-700 rounded-md py-3 flex justify-center items-center cursor-pointer card" ws-send>
                 {{$card.Number}}
@@ -72,7 +72,7 @@
 {{end}}
 
 {{block "Q-animation" .}}
-<div id="Q-animation-holder" class="absolute Q-animation-holder bg-blue-300 rounded-md flex justify-center items-center"></div>
+<div id="Q-animation-holder" hx-trigger="htmx:animationEnd" class="absolute Q-animation-holder bg-blue-300 rounded-md flex justify-center items-center" ws-send></div>
 {{end}}
 
 {{block "question-cover" .}}

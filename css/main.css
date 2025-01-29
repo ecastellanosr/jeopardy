@@ -23,9 +23,11 @@
   }
 
 .Q-animation{
-    transition:  all 2s; 
     z-index: 10; /* Ensure it appears on top */    
     left: 0;
     bottom: 0;
     transform: scale(1,1); /* translate(var(--x), var(--x)) */
+}
+.Q-transition{
+    transition:  all 2s; 
 }

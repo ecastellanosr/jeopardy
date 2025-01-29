@@ -1,48 +1,54 @@
 {
-    "title": "title",
+    "title": "GeoGuesser",
     "cards": [
         {
             "number": "100",
-            "question": "What is the capital of France?",
-            "answer": "Paris",
+            "question": "Escritor, guionista, editor de libros y periodista colombiano. En 1982 recibió el Premio Nobel de Literatura.",
+            "answer": "Gabriel Garcia Marquez",
             "HasQImg": true,
             "QImgName": "category1_question1.png",
-            "HasAImg" : false,
-            "AImgName" : "category1_answer1.png"
+            "HasAImg" : true,
+            "AImgName" : "",
+            "Revealed" : false
         },
         {
             "number": "200",
             "question": "Show an image of a cat.",
             "answer": "Paris",
             "HasQImg": true,
-            "QImgName": "category1_question2.png",
-            "HasAImg" : false,
-            "AImgName" : ""
+            "QImgName": "",
+            "HasAImg" : true,
+            "AImgName" : "",
+            "Revealed" : false
         },{
             "number": "300",
             "question": "What is the capital of France?",
             "answer": "Paris",
             "HasQImg": true,
-            "QImgName": "category1_question3.png",
-            "HasAImg" : false,
-            "AImgName" : ""
+            "QImgName": "",
+            "HasAImg" : true,
+            "AImgName" : "",
+            "Revealed" : false
         },
         {
             "number": "400",
             "question": "Show an image of a cat.",
             "answer": "Paris",
             "HasQImg": true,
-            "QImgName": "category1_question4.png",
-            "HasAImg" : false,
-            "AImgName" : ""
+            "QImgName": "",
+            "HasAImg" : true,
+            "AImgName" : "",
+            "Revealed" : false
         },{
             "number": "500",
             "question": "What is the capital of France?",
             "answer": "Paris",
             "HasQImg": true,
-            "QImgName": "category1_question5.png",
-            "HasAImg" : false,
-            "AImgName" : ""
+            "QImgName": "",
+            "HasAImg" : true,
+            "AImgName" : "",
+            "Revealed" : false
         }
     ]
 }
+
