@@ -55,24 +55,26 @@ func main() {
 	team_id := 0 //start the id teams
 
 	categories, err := readcategories()
-	// initialize a user manager
+	// initialize a manager for Users and hosts
 	manager := NewManager(categories)
 	if err != nil {
 		fmt.Println(err)
 	}
+	// this is the initial get for normal clients, it returns the index block and is filled with the categories and teams that were previously set.
+	// categories are filled while initializing a manager and teams are set in the client UI. If you refresh you get those teams.
+	// a button to reset the teams may be adviced.
 	e.GET("/", func(c echo.Context) error {
 		team_id = 0 // take this out before solution in websockets
-
 		return c.Render(200, "index", manager.categoriesandteams)
 	})
-
+	// initial get for hosts.
 	e.GET("/host", func(c echo.Context) error {
 		return c.Render(200, "host", manager.categoriesandteams)
 	})
-
+	// Post to get the teams request for clients. Host are handled in websockets
 	e.POST("/teams", func(c echo.Context) error {
+		//this can be resolved by websockets instead as it might create race condition with the team id created in the manager side.
 		team_id++
-
 		name := c.FormValue("name")
 		team := createTeam(name, team_id)
 		c.Render(200, "team", team)
@@ -82,21 +84,21 @@ func main() {
 		}
 		return c.Render(200, "oob-add-team", nil)
 	})
-
+	//Post for clicking yes when creating a team in the client UI
 	e.POST("/yes-team", func(c echo.Context) error {
 		return c.Render(200, "team-form", nil)
-
 	})
-
+	// Post for clicking no when creating a team in the client UI
 	e.POST("/no-team", func(c echo.Context) error {
 		if manager.currentTeamID > 2 {
-			// take out the question shield
+			//this boolean makes so that there is no more "do you want to add another team" element when refreshed
 			manager.categoriesandteams.Fullteams = true
+			// take out the question shield
 			return c.Render(200, "oob-cover", nil)
 		}
 		return c.Render(200, "add-team", nil)
 	})
-
+	//
 	e.POST("/clientquestion/:id", func(c echo.Context) error {
 		idStr := c.Param("id")
 		id, err := strconv.Atoi(idStr)
@@ -138,17 +140,19 @@ func main() {
 		card, _ := FindCard(categories, id)
 		return c.Render(200, "host-question-cover", card)
 	})
-
+	// Delete the question cover triggered when ending animation to reset the animation position
 	e.DELETE("/QuestionCover", func(c echo.Context) error {
 		// time.Sleep(1 * time.Second)
 		return c.NoContent(http.StatusOK)
 	})
-
+	//tailwind
 	tailwindHandler := twhandler.New(http.Dir("css"), "/css", twembed.New())
 	e.GET("/css/*", echo.WrapHandler(tailwindHandler))
+	// manage websockets for clients
 	e.GET("ws", manager.handleWebSocket)
+	// manage websockets for hosts
 	e.GET("wshost", manager.handleHostWebSocket)
-
+	//Used port
 	port := ":8000"
 	fmt.Println("WebSocket server is running on Port", port)
 	e.Logger.Fatal(e.Start(port))

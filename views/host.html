@@ -53,14 +53,14 @@
 
 {{block "host-question-cover" .}}
 <div id="question-cover" class="absolute bottom-0 grid grid-cols-2 auto-cols-fr text-center items-center rounded-md justify-between min-w-full cursor-default bg-blue-300 p-8 min-h-full opacity-100 z-20"> 
-    {{template "test-question" .}}
-    {{template "test-answer" .}}
+    {{template "host-question" .}}
+    {{template "host-answer" .}}
 </div>
 <div class="rounded-md py-3 flex justify-center items-center opacity-0"></div>
 {{end}}
 
 
-{{block "test-question" .}}
+{{block "host-question" .}}
 <div id="question" class="flex flex-col items-center justify-between border-r-2 h-full">
     <div class="text-3xl border-b-2 w-[90%]">PREGUNTA</div>
     <div class="text-2xl">
@@ -74,7 +74,7 @@
 </div>    
 {{end}}
 
-{{block "test-answer" .}}
+{{block "host-answer" .}}
 <div id="question" class="flex flex-col items-center justify-between content-between h-full">
     <div class="text-3xl border-b-2  w-[90%]">RESPUESTA</div>
     <div>
@@ -95,7 +95,6 @@
         {{template "addpoints" .}}
     </div>
 {{end}}
-
 
 {{block "addpoints" .}}
 <button hx-swap="outerHTML" hx-post="/host/addpoints/team_id/question_id" class="border-2 border-green-900 w-1/2 bg-green-600 hover:cursor-pointer py-1 hover:bg-green-700">  Add Points  </button>

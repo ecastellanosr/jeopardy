@@ -50,7 +50,7 @@
     {{ range $category := $categories}}
         {{range $card := $category.Cards}}
         {{if $card.Revealed}}
-        <div id="card{{$card.ID}}" class="rounded-md py-3 flex justify-center items-center opacity-0"></div>   
+        <div id="card{{$card.ID}}" class="rounded-md py-3 flex justify-center items-center opacity-0 min-h-16"></div>   
         {{- else}}
             <div id="card{{$card.ID}}"  hx-swap="outerHTML swap:500ms" hx-trigger="click" hx-vals='{"number": "{{ .Number }}"}' class="bg-cyan-700 rounded-md py-3 flex justify-center items-center cursor-pointer card" ws-send>
                 {{$card.Number}}
@@ -79,8 +79,9 @@
 <div id="question-cover" class="absolute bottom-0 grid grid-cols-1 auto-cols-fr text-center items-center rounded-md justify-between min-w-full cursor-default bg-blue-300 p-8 min-h-full opacity-100 z-20"> 
         {{template "oob-question" .}}
     </div>
-<div class="rounded-md py-3 flex justify-center items-center opacity-0"></div>
+<div class="rounded-md py-3 flex justify-center items-center opacity-0 min-h-16"></div>
 {{end}}
+
 
 {{block "oob-question" .}}
     <div id="question" class="flex flex-col items-center justify-between"> 
@@ -160,8 +161,4 @@
 
 {{block "deletedquestion" .}}
 <div id="deletedquestion{{.ID}}" hx-post="clientrevealquestion/{{.ID}}" hx-swap="outerHTML" hx-trigger="revealed delay:2s" class="rounded-md py-3 flex justify-center items-center opacity-0">100</div>
-{{end}}
-
-{{block "testdeletedquestion" .}}
-<div class="rounded-md py-3 flex justify-center items-center opacity-0">100</div>
 {{end}}

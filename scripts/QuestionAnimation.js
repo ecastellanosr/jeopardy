@@ -4,39 +4,45 @@ window.addEventListener("load", (event) => {
 
 
 function startcalculations() {
-    console.log("its working")
     let gridItem;
     const gridContainer = document.getElementById('cards-subgrid');
     const anycard = document.getElementById('card1');
+    //card dimensions
     const dimensions = anycard.getBoundingClientRect();
     const cardWidth = dimensions.width
     const cardHeight = dimensions.height
-    console.log("cardheight:",cardHeight,"cardWidth:",cardWidth)
+    console.log("cardheight:",cardHeight,"cardWidth:",cardWidth) //for troubleshooting 
 
-    // Calculate left and bottom
+    // Calculate Grid width and height to get position of columns and rows with card's dimensions
     const GridWidth = gridContainer.offsetWidth; 
     const GridHeight = gridContainer.offsetHeight; 
 
     const WidthRatio = cardWidth/GridWidth
     const HeightRatio = cardHeight/GridHeight
 
-    // Get the computed styles of the grid item
+    // qanimation is the canvas for the card animation, the card itself isnt animating, we replace it with this canvas. 
+    // its done like this because we had multiple things that needed to be done with the card, 
+    // it needs to place another empty card to not move the cards position, send websocket to show the question after the animation and remove cover for question. 
+    // adding the animation to it would add complexity to the card element
+
     let qanimation = document.querySelector(".Q-animation-holder");
+    // event listener for a websocket send before its done as the card item sends a websocket message to fetch the question of the card.
     document.addEventListener("htmx:beforeSend", function (event) {
-        console.log(event.target.id)
-        console.log("we received a wsmessage")
-        qanimation = document.querySelector(".Q-animation-holder");
+        // console.log(event.target.id)
+        // console.log("we received a wsmessage") //troubleshooting 
+        qanimation = document.querySelector(".Q-animation-holder"); //
     const target = event.target; // Typecast event.target to HTMLElement
+    // if statement to only get target websocket sends from an html item with a card id
     if (target.id && target.id.startsWith("card")) {
         gridItem = target; // Assign the clicked element
-        
+        //get the card's grid index from its array. 
         const gridIndex = Array.from(gridContainer.children).indexOf(gridItem);
 
         const columns = 6; // Number of columns in the grid
-        const rows = 5
-        let columnStart = (Math.floor((gridIndex+1)/ (columns-(0.9)))+1); // 1-based index
-        
-        let rowStart = ((gridIndex+1) % rows);
+        const rows = 5 //Number of rows in the grid
+
+        let columnStart = (Math.ceil((gridIndex+1)/ (rows))); // GridIndex gets a +1 as it starts in 0. Index goes along rows, first column has 0,1,2,3 and 4 index and so on.
+        let rowStart = ((gridIndex+1) % rows); 
         if (rowStart === 0){
             rowStart = 5
         }
